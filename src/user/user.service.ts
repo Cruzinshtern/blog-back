@@ -22,6 +22,7 @@ export class UserService {
         newUser.username = user.username;
         newUser.email = user.email;
         newUser.password = passwordHash;
+        newUser.role = user.role;
 
         return from(this.userRepository.save(newUser));
       }),
@@ -48,11 +49,12 @@ export class UserService {
     return from(this.userRepository.delete(id));
   }
 
-  validateUser(email: string, password: string): Observable<UserEntity> {
+  validateUser(email: string, password: string): Observable<any> {
     return this.findByEmail(email).pipe(
-      switchMap((user: UserEntity) => this.authService.comparePasswords(password, user.password).pipe(
+      switchMap((user: UserEntity) =>
+        this.authService.comparePasswords(password, user.password).pipe(
         map((match: boolean) => {
-          if(match) {
+          if (match) {
             return user;
           } else {
             throw Error;
@@ -62,11 +64,12 @@ export class UserService {
     )
   }
 
-  login(user: UserEntity): Observable<string> {
+  login(user): Observable<string> {
     return this.validateUser(user.email, user.password).pipe(
       switchMap((user: UserEntity) => {
-        if (user) {
-          return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt)
+        if(user) {
+          return this.authService.generateJWT(user).pipe(
+            map((token: string) => token)
           )
         } else {
           return 'Wrong credentials';
@@ -74,7 +77,5 @@ export class UserService {
       }),
     );
   }
-
-
 
 }

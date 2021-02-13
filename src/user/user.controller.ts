@@ -4,6 +4,7 @@ import { UserEntity } from "./models/user.entity";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
+
 @Controller('users')
 export class UserController {
 
@@ -17,10 +18,10 @@ export class UserController {
   }
 
   @Post('login')
-  loginUser(@Body() user: UserEntity): Observable<Object> {
+  login(@Body() user: UserEntity): Observable<any> {
     return this.userService.login(user).pipe(
-      map((jwt: string) => {
-        return { access_token: jwt };
+      map((token: string) => {
+        return { token: token };
       })
     )
   }

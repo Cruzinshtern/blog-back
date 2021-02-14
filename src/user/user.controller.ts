@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, Response } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UserEntity } from "./models/user.entity";
 import { Observable } from "rxjs";
@@ -27,8 +27,16 @@ export class UserController {
   }
 
   @Get()
-  findAllUsers(): Observable<UserEntity[]> {
-    return this.userService.findAll();
+  findAllUsers(@Request() req): Observable<any> {
+    return this.userService.findAll().pipe(
+      map((data) => {
+        const response = {
+          data: data,
+          user: req.body.user,
+        }
+        return response;
+      })
+    );
   }
 
   @Get(':id')
